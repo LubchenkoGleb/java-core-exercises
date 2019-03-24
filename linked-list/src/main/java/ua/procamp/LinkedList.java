@@ -1,5 +1,7 @@
 package ua.procamp;
 
+import java.util.stream.Stream;
+
 /**
  * {@link LinkedList} is a list implementation that is based on singly linked generic nodes. A node is implemented as
  * inner static class {@link Node<T>}. In order to keep track on nodes, {@link LinkedList} keeps a reference to a head node.
@@ -7,6 +9,9 @@ package ua.procamp;
  * @param <T> generic type parameter
  */
 public class LinkedList<T> implements List<T> {
+
+    private Node<T> head;
+    private int size;
 
     /**
      * This method creates a list of provided elements
@@ -16,7 +21,11 @@ public class LinkedList<T> implements List<T> {
      * @return a new list of elements the were passed as method parameters
      */
     public static <T> List<T> of(T... elements) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+
+        LinkedList<T> list = new LinkedList<>();
+        Stream.of(elements).forEach(list::add);
+        return list;
+
     }
 
     /**
@@ -26,7 +35,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(T element) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        this.add(size, element);
     }
 
     /**
@@ -38,7 +47,16 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        Node<T> node = new Node<>(element);
+        if (index == 0) {
+            node.next = head;
+            head = node;
+        } else {
+            Node<T> nodeByIndex = getNodeByIndex(index - 1);
+            node.next = nodeByIndex.next;
+            nodeByIndex.next = node;
+        }
+        size++;
     }
 
     /**
@@ -50,7 +68,8 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        Node<T> nodeByIndex = getNodeByIndex(index);
+        nodeByIndex.value = element;
     }
 
     /**
@@ -62,7 +81,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public T get(int index) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        return getNodeByIndex(index).value;
     }
 
     /**
@@ -73,7 +92,18 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void remove(int index) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        if (index == 0) {
+            if (size == 0) {
+                throw new IndexOutOfBoundsException(index);
+            }
+            head = head.next;
+        } else {
+
+            Node<T> nodeByIndex = getNodeByIndex(index - 1);
+            Node<T> nodeForRemove = nodeByIndex.next;
+            nodeByIndex.next = nodeForRemove.next;
+        }
+        size--;
     }
 
 
@@ -84,7 +114,15 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public boolean contains(T element) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        Node<T> currentElements = head;
+        while (currentElements != null) {
+            if (currentElements.value.equals(element)) {
+                return true;
+            } else {
+                currentElements = currentElements.next;
+            }
+        }
+        return false;
     }
 
     /**
@@ -94,7 +132,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        return head == null;
     }
 
     /**
@@ -104,7 +142,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public int size() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        return size;
     }
 
     /**
@@ -112,6 +150,32 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        size = 0;
+        head = null;
+    }
+
+    private Node<T> getNodeByIndex(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException(index);
+        } else {
+
+            Node<T> currentElement = head;
+            for (int i = 0; i < index; i++) {
+                currentElement = currentElement.next;
+            }
+            return currentElement;
+
+        }
+    }
+
+    private static class Node<T> {
+
+        private T value;
+
+        private Node<T> next;
+
+        Node(T value) {
+            this.value = value;
+        }
     }
 }
